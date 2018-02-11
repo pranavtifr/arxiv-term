@@ -1,6 +1,11 @@
 #! /usr/bin/env python
+import sys
 import urllib
-import requests
+
+if sys.version_info[0] < 3:
+    import urllib2
+else:
+    import requests
 import argparse
 from subprocess import call
 fieldname = None
@@ -56,7 +61,11 @@ if fieldname == None or typesname == None :
 
 url = "https://arxiv.org/list/"+fieldname+typesname
 #f = urllib.urlopen(url)
-f = urllib.request.urlopen(url)
+f=None
+if sys.version_info[0] < 3:
+    f = urllib2.urlopen(url)
+else:
+    f = urllib.request.urlopen(url)
 s=str(f.read())
 
 def getabs(s):
