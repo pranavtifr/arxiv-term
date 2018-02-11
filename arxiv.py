@@ -8,6 +8,79 @@ else:
     import requests
 import argparse
 from subprocess import call
+
+def downpaper(down): #Code for Downloading the Paper with the corresponding ID
+    downurl = 'https://arxiv.org/pdf/' + down 
+    print(downurl)
+    call(["wget","-U firefox","-nc",downurl])
+
+def getpage(url): #Fetch the Entire page as a string
+    f=None
+    if sys.version_info[0] < 3:
+        f = urllib2.urlopen(url)
+    else:
+        f = urllib.request.urlopen(url)
+    s=str(f.read())
+    return s
+
+class Paper():
+    def __init__(self):
+        self.title = None
+        self.author = None
+        self.abstract = None
+        self.ID = None
+
+
+    def setID(self,idd):
+        self.ID = idd
+
+    def gettitle(self):
+        return self.title
+
+    def getID(self):
+        return self.ID
+
+    def setinfo(self,s):
+        titlestart = s.find('<span class="descriptor">Title:</span>')
+        IDstart=s[:titlestart].rfind('title="Abstract">arXiv:')
+        self.ID = s[IDstart+ 23:s.find('</a>',IDstart)]
+        if titlestart == -1:
+            return titlestart
+        self.title = s[titlestart+37:s.find('</div>',titlestart+1)]
+        return titlestart
+
+    def setabs(self):
+        paperpage = getpage("https://arxiv.org/abs/"+self.ID)
+        if self.title == None:
+            titlestart = paperpage.find('<span class="descriptor">Title:</span>')
+            self.title = paperpage[titlestart+40:paperpage.find('</h1>',titlestart+1)]
+        absstart = paperpage.find('<span class="descriptor">Abstract:</span> ')
+        self.abstract = paperpage[absstart+41:paperpage.find('</blockquote>',absstart)]
+
+    def display(self):
+        print(self.title)
+        print(self.ID)
+        print(self.abstract)
+
+    def download(self):
+        downpaper(self.ID)
+        
+    def view(self):
+        self.setabs()
+        self.display()
+        try:
+            dload = raw_input("Download this paper (y/N)? ")
+        except:
+            dload = input("Download this paper (y/N)? ")
+
+        if dload == 'y':
+            self.download()
+
+def getpaper(s):
+    paperobj = Paper()
+    titlestart = paperobj.setinfo(s)
+    return paperobj,titlestart+3
+
 fieldname = None
 typesname = None
 parser = argparse.ArgumentParser()
@@ -25,13 +98,16 @@ types.add_argument("--new", help="From /<department>/new", action="store_true")
 types.add_argument("--recent", help="From /<department>/recent", action="store_true")
 
 parser.add_argument("-d","--download",help="Download the pdf of the given arxiv ID",type=str)
+parser.add_argument("-v","--view",help="View the details of the given arxiv ID",type=str)
 args = parser.parse_args()
-down = None
-down = args.download
 if args.download:
-    downurl = 'https://arxiv.org/pdf/' + down 
-    print(downurl)
-    call(["wget","-U firefox","-nc",downurl])
+    downpaper(args.download)
+    exit(0)
+
+if args.view:
+    pap = Paper()
+    pap.setID(args.view)
+    pap.view()
     exit(0)
 
 if args.astro_ph:
@@ -60,27 +136,21 @@ if fieldname == None or typesname == None :
     exit(0)
 
 url = "https://arxiv.org/list/"+fieldname+typesname
-#f = urllib.urlopen(url)
-f=None
-if sys.version_info[0] < 3:
-    f = urllib2.urlopen(url)
-else:
-    f = urllib.request.urlopen(url)
-s=str(f.read())
-
-def getabs(s):
-    titlestart = s.find('<span class="descriptor">Title:</span>')
-    if titlestart == -1:
-        return None,0
-    title = s[titlestart+37:s.find('</div>',titlestart+1)]
-    return title,titlestart+3
-
+papercoll = []
+s = getpage(url)
 i = 1
 while True:
-    url,endlink = getabs(s)
-    if url == None:
-        print("End of Page")
+    paper,endlink = getpaper(s)
+    if paper.gettitle() == None:
         break
-    print(i,url)
+    papercoll.append(paper)
+    print(i,paper.gettitle(),paper.getID())
     i = i + 1
     s=s[endlink:]
+
+try:
+    choice = raw_input("Choose a Paper ")
+except:
+    choice = input("Choose a Paper ")
+
+papercoll[int(choice) -1].view()

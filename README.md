@@ -6,11 +6,28 @@ If you want to directly run from terminal you might want to give it execution ac
 
 ```chmod +x arxiv.py```
 
-For other help, Run the file with the ```-h```  flag
 
 For Eg: If you are in the same folder as the file  ```./arxiv.py -h``` should give you all the necessary details.
 
-Only few physics fields have been added now, More will be added later. As of now the app only shows the titles of the papers,
-and can download the file of the link provided
+Only few physics fields have been added now, More will be added later.
 
-More features will be added soon.
+    usage: arxiv [-h]
+                [--astro_ph | --cond_mat | --gr_qc | --hep_ex | --hep_lat | --hep_ph | --hep_th]
+                [--new | --recent] [-d DOWNLOAD] [-v VIEW]
+
+    optional arguments:
+    -h, --help            show this help message and exit
+    --astro_ph            High Energy Physics Theory
+    --cond_mat            Condensed Matter Physics
+    --gr_qc               General Relativity and Cosmology
+    --hep_ex              High Energy Physics Experiment
+    --hep_lat             High Energy Physics Lattice
+    --hep_ph              High Energy Physics Phenomenology
+    --hep_th              High Energy Physics Theory
+    --new                 From /<department>/new
+    --recent              From /<department>/recent
+    -d DOWNLOAD, --download DOWNLOAD
+                            Download the pdf of the given arxiv ID
+    -v VIEW, --view VIEW  View the details of the given arxiv ID
+
+Querying will be added soon.
