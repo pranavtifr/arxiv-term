@@ -14,7 +14,7 @@ field.add_argument("--hep_lat", help="High Energy Physics Lattice", action="stor
 field.add_argument("--hep_ph", help="High Energy Physics Phenomenology", action="store_true")
 field.add_argument("--hep_th", help="High Energy Physics Theory", action="store_true")
 
-types = parser.add_mutually_exclusive_group()
+types = parser.add_mutually_exclusive_group(required=True)
 types.add_argument("--new", help="From /<department>/new", action="store_true")
 types.add_argument("--recent", help="From /<department>/recent", action="store_true")
 
