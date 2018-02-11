@@ -2,10 +2,11 @@
 import urllib
 import requests
 import argparse
+from subprocess import call
 fieldname = None
 typesname = None
 parser = argparse.ArgumentParser()
-field = parser.add_mutually_exclusive_group(required=True)
+field = parser.add_mutually_exclusive_group()
 field.add_argument("--astro_ph", help="High Energy Physics Theory", action="store_true")
 field.add_argument("--cond_mat", help="Condensed Matter Physics", action="store_true")
 field.add_argument("--gr_qc", help="General Relativity and Cosmology", action="store_true")
@@ -14,11 +15,20 @@ field.add_argument("--hep_lat", help="High Energy Physics Lattice", action="stor
 field.add_argument("--hep_ph", help="High Energy Physics Phenomenology", action="store_true")
 field.add_argument("--hep_th", help="High Energy Physics Theory", action="store_true")
 
-types = parser.add_mutually_exclusive_group(required=True)
+types = parser.add_mutually_exclusive_group()
 types.add_argument("--new", help="From /<department>/new", action="store_true")
 types.add_argument("--recent", help="From /<department>/recent", action="store_true")
 
+parser.add_argument("-d","--download",help="Download the pdf of the given arxiv ID",type=str)
 args = parser.parse_args()
+down = None
+down = args.download
+if args.download:
+    downurl = 'https://arxiv.org/pdf/' + down 
+    print(downurl)
+    call(["wget","-U firefox","-nc",downurl])
+    exit(0)
+
 if args.astro_ph:
     fieldname = 'astro-ph'
 if args.cond_mat:
@@ -39,6 +49,10 @@ if args.new:
 if args.recent:
     typesname = '/recent'
 
+if fieldname == None or typesname == None :
+    print('Please enter the Arguments')
+    print('Use -h flag for details')
+    exit(0)
 
 url = "https://arxiv.org/list/"+fieldname+typesname
 #f = urllib.urlopen(url)

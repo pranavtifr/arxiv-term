@@ -10,5 +10,7 @@ For other help, Run the file with the ```-h```  flag
 
 For Eg: If you are in the same folder as the file  ```./arxiv.py -h``` should give you all the necessary details.
 
-Only few physics fields have been added now, More will be added later. As of now the app only shows the titles of the papers.
+Only few physics fields have been added now, More will be added later. As of now the app only shows the titles of the papers,
+and can download the file of the link provided
+
 More features will be added soon.
