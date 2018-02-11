@@ -97,6 +97,7 @@ types = parser.add_mutually_exclusive_group()
 types.add_argument("--new", help="From /<department>/new", action="store_true")
 types.add_argument("--recent", help="From /<department>/recent", action="store_true")
 
+parser.add_argument("-r","--replacement", help="Include Replacement papers in new", action="store_true")
 parser.add_argument("-d","--download",help="Download the pdf of the given arxiv ID",type=str)
 parser.add_argument("-v","--view",help="View the details of the given arxiv ID",type=str)
 args = parser.parse_args()
@@ -136,9 +137,14 @@ if fieldname == None or typesname == None :
     exit(0)
 
 url = "https://arxiv.org/list/"+fieldname+typesname
-papercoll = []
 s = getpage(url)
+
+if not args.replacement:
+    temp = s[:s.find('<h3>Replacements')]
+    s = temp
+
 i = 1
+papercoll = []
 while True:
     paper,endlink = getpaper(s)
     if paper.gettitle() == None:
@@ -147,10 +153,14 @@ while True:
     print(i,paper.gettitle(),paper.getID())
     i = i + 1
     s=s[endlink:]
-
 try:
-    choice = raw_input("Choose a Paper ")
-except:
-    choice = input("Choose a Paper ")
+    try:
+        choice = int(raw_input("Choose a Paper (Invalid Numbers or strings exit the program) "))
+    except:
+        choice = int(input("Choose a Paper (Invalid Numbers or strings exit the program) "))
+except ValueError:
+    exit(0)
 
-papercoll[int(choice) -1].view()
+if choice - 1 > len(papercoll):
+    exit(0)
+papercoll[choice -1].view()
