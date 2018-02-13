@@ -28,6 +28,8 @@ Only few physics fields have been added now, More will be added later.
     -r, --replacement     Include Replacement papers in new
     -d DOWNLOAD, --download DOWNLOAD
                             Download the pdf of the given arxiv ID
+                            (Multiple ones should be seperated by commas)
     -v VIEW, --view VIEW  View the details of the given arxiv ID
+                            (Multiple ones should be seperated by commas)
 
 Querying will be added soon.

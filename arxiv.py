@@ -16,11 +16,15 @@ def downpaper(down): #Code for Downloading the Paper with the corresponding ID
 
 def getpage(url): #Fetch the Entire page as a string
     f=None
-    if sys.version_info[0] < 3:
-        f = urllib2.urlopen(url)
-    else:
-        f = urllib.request.urlopen(url)
-    s=str(f.read())
+    try:
+        if sys.version_info[0] < 3:
+            f = urllib2.urlopen(url)
+        else:
+            f = urllib.request.urlopen(url)
+    except:
+        print("Invalid ID")
+        exit(0)
+    s=str(f.read().decode())
     return s
 
 class Paper():
@@ -75,7 +79,7 @@ class Paper():
 
         if dload == 'y':
             self.download()
-
+        print("-------------------------------------------")
 def getpaper(s):
     paperobj = Paper()
     titlestart = paperobj.setinfo(s)
@@ -98,17 +102,21 @@ types.add_argument("--new", help="From /<department>/new", action="store_true")
 types.add_argument("--recent", help="From /<department>/recent", action="store_true")
 
 parser.add_argument("-r","--replacement", help="Include Replacement papers in new", action="store_true")
-parser.add_argument("-d","--download",help="Download the pdf of the given arxiv ID",type=str)
-parser.add_argument("-v","--view",help="View the details of the given arxiv ID",type=str)
+parser.add_argument("-d","--download",help="Download the pdf of the given arxiv ID (multiple ones should be seperated by commas)",type=str)
+parser.add_argument("-v","--view",help="View the details of the given arxiv ID (multiple ones should be seperated by commas)",type=str)
 args = parser.parse_args()
 if args.download:
-    downpaper(args.download)
+    ch = args.download.split(",")
+    for i in ch:
+        downpaper(i)
     exit(0)
 
 if args.view:
-    pap = Paper()
-    pap.setID(args.view)
-    pap.view()
+    ch = args.view.split(",")
+    for i in ch:
+        pap = Paper()
+        pap.setID(i)
+        pap.view()
     exit(0)
 
 if args.astro_ph:
@@ -155,12 +163,13 @@ while True:
     s=s[endlink:]
 try:
     try:
-        choice = int(raw_input("Choose a Paper (Invalid Numbers or strings exit the program) "))
+        choice = raw_input("Choose Papers seperated by commas (Invalid Numbers or strings exit the program) ")
     except:
-        choice = int(input("Choose a Paper (Invalid Numbers or strings exit the program) "))
-except ValueError:
+        choice = input("Choose Papers seperated by commas (Invalid Numbers or strings exit the program) ")
+    c = list(map(int,choice.split(",")))
+    for i in c:
+        if i - 1 > len(papercoll):
+            exit(0)
+        papercoll[i -1].view()
+except:
     exit(0)
-
-if choice - 1 > len(papercoll):
-    exit(0)
-papercoll[choice -1].view()
