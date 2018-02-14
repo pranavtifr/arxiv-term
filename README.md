@@ -10,9 +10,10 @@ If you want to directly run from terminal you might want to give it execution ac
 For Eg: If you are in the same folder as the file  ```./arxiv.py -h``` should give you all the necessary details.
 
 Only few physics fields have been added now, More will be added later.
+
     usage: arxiv [-h]
                 [--astro_ph | --cond_mat | --gr_qc | --hep_ex | --hep_lat | --hep_ph | --hep_th]
-                [--new | --recent] [-r] [-d DOWNLOAD] [-v VIEW]
+                [--new | --recent] [-r] [-d DOWNLOAD] [-v VIEW] [-q QUERY]
 
     optional arguments:
     -h, --help            show this help message and exit
@@ -27,9 +28,10 @@ Only few physics fields have been added now, More will be added later.
     --recent              From /<department>/recent
     -r, --replacement     Include Replacement papers in new
     -d DOWNLOAD, --download DOWNLOAD
-                            Download the pdf of the given arxiv ID
-                            (Multiple ones should be seperated by commas)
-    -v VIEW, --view VIEW  View the details of the given arxiv ID
-                            (Multiple ones should be seperated by commas)
+                            Download the pdf of the given arxiv ID (multiple ones
+                            should be seperated by commas)
+    -v VIEW, --view VIEW  View the details of the given arxiv ID (multiple ones
+                            should be seperated by commas)
+    -q QUERY, --query QUERY
+                            Query via Duckduckgo (enter string within quotes)
 
-Querying will be added soon.

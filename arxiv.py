@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 import sys
+import re
 import urllib
 
 if sys.version_info[0] < 3:
@@ -22,11 +23,61 @@ def getpage(url): #Fetch the Entire page as a string
         else:
             f = urllib.request.urlopen(url)
     except:
-        print("Invalid ID")
+        print("Error: Maybe Invalid ID")
         exit(0)
     s=str(f.read().decode())
     return s
 
+def query(string):
+
+    c = list(map(str,string.split()))
+    url = " https://duckduckgo.com/html/?q=site:arxiv.org+"
+    for i in c:
+        url = url + i + '+'
+    print(url)
+    #print(getpage(url))
+    links = []
+    page = getpage(url)
+    print('----------------')
+    #print(re.findall("[0-9]{3,}\.[0-9]{3,}",page))
+    #print(re.findall("[0-9]{6}",page))
+    s = re.findall('%2Fabs%2F.*">',page)
+    s = s + re.findall('%2Fpdf%2F.*">',page)
+    s = s + re.findall('\/pdf\/.*',page)
+    s = s + re.findall('\/abs\/.*',page)
+    s = s + re.findall("[0-9]{4}\.[0-9]{4,5}",page)
+    for i in s:
+        k = re.findall("[0-9]{4}\.[0-9]{4,5}",i)
+        if not k:
+            k = re.findall("[^/]*/[0-9]{7}",i)
+        if k in links:
+            continue
+        links = links + k
+
+    i = 1
+    papercoll = []
+    for l in set(links):
+        temp = Paper()
+        temp.setID(l)
+        temp.setabs()
+        papercoll = papercoll + [temp]
+        print(i,'>',temp.gettitle())
+        i = i+1
+
+    while True:
+        try:
+            try:
+                choice = raw_input("Choose Papers seperated by commas (Invalid Numbers or strings exit the program) ")
+            except:
+                choice = input("Choose Papers seperated by commas (Invalid Numbers or strings exit the program) ")
+            c = list(map(int,choice.split(",")))
+            for i in c:
+                if i - 1 > len(papercoll):
+                    exit(0)
+                papercoll[i -1].view()
+        except:
+            exit(0)
+    
 class Paper():
     def __init__(self):
         self.title = None
@@ -57,7 +108,7 @@ class Paper():
         paperpage = getpage("https://arxiv.org/abs/"+self.ID)
         if self.title == None:
             titlestart = paperpage.find('<span class="descriptor">Title:</span>')
-            self.title = paperpage[titlestart+40:paperpage.find('</h1>',titlestart+1)]
+            self.title = paperpage[titlestart+39:paperpage.find('</h1>',titlestart+1)]
         absstart = paperpage.find('<span class="descriptor">Abstract:</span> ')
         self.abstract = paperpage[absstart+41:paperpage.find('</blockquote>',absstart)]
 
@@ -104,6 +155,7 @@ types.add_argument("--recent", help="From /<department>/recent", action="store_t
 parser.add_argument("-r","--replacement", help="Include Replacement papers in new", action="store_true")
 parser.add_argument("-d","--download",help="Download the pdf of the given arxiv ID (multiple ones should be seperated by commas)",type=str)
 parser.add_argument("-v","--view",help="View the details of the given arxiv ID (multiple ones should be seperated by commas)",type=str)
+parser.add_argument("-q","--query",help="Query via Duckduckgo (enter string within quotes)",type=str)
 args = parser.parse_args()
 if args.download:
     ch = args.download.split(",")
@@ -119,6 +171,9 @@ if args.view:
         pap.view()
     exit(0)
 
+if args.query:
+    query(args.query)
+    exit(0)
 if args.astro_ph:
     fieldname = 'astro-ph'
 if args.cond_mat:
