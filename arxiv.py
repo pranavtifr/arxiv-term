@@ -13,7 +13,9 @@ from subprocess import call
 def downpaper(down): #Code for Downloading the Paper with the corresponding ID
     downurl = 'https://arxiv.org/pdf/' + down 
     print(downurl)
-    call(["wget","-U firefox","-nc",downurl])
+#    call(["wget","-U firefox","-nc",downurl])
+    call(["curl","-L","-o",down,downurl])
+
 
 def getpage(url): #Fetch the Entire page as a string
     f=None
@@ -123,13 +125,25 @@ class Paper():
     def view(self):
         self.setabs()
         self.display()
+        
         try:
-            dload = raw_input("Download this paper (y/N)? ")
+            dload = raw_input("View this paper (y/N)? ")
         except:
-            dload = input("Download this paper (y/N)? ")
+            dload = input("View this paper (y/N)? ")
 
         if dload == 'y':
             self.download()
+            call(["xdg-open",self.ID])
+            try:
+                keep = raw_input("Keep this paper (y/N)? ")
+            except:
+                keep = input("Keep this paper (y/N)? ")
+            if keep == 'y':
+                pass
+            else:
+                call(["rm",self.ID])
+                
+
         print("-------------------------------------------")
 def getpaper(s):
     paperobj = Paper()
